@@ -125,10 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const columnTables = {};
         tables.forEach(table => {
             table.columns.forEach(col => {
-                if (!columnTables[col.name.toUpperCase()]) {
-                    columnTables[col.name.toUpperCase()] = [];
+                const colName = col.name.toUpperCase();
+                if (!columnTables[colName]) {
+                    columnTables[colName] = [];
                 }
-                columnTables[col.name.toUpperCase()].push(table.name);
+                columnTables[colName].push(table.name);
             });
         });
         const duplicates = {};
@@ -162,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function compareEnvironments(table) {
-        const originColumns = originData[table.name.toUpperCase()]?.map(col => ({ ...col, name: col.name.toUpperCase() })) || [];
+        const originColumns = (originData[table.name.toUpperCase()]?.columns || []).map(col => ({ ...col, name: col.name.toUpperCase() }));
         const synapseColumns = table.columns.map(col => ({ ...col, name: col.name.toUpperCase() }));
 
         const differences = {

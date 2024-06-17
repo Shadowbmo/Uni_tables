@@ -8,7 +8,7 @@ body {
 }
 
 header {
-    background-color: #4CAF50;
+    background-color: #4d56a4;
     color: white;
     width: 100%;
     padding: 1rem;
@@ -65,7 +65,7 @@ aside {
 
 .table-info h3 {
     margin-bottom: 0.5rem;
-    border-bottom: 2px solid #4CAF50;
+    border-bottom: 2px solid #4d56a4;
     padding-bottom: 0.25rem;
 }
 
@@ -125,7 +125,7 @@ body {
 }
 
 header {
-    background-color: #4CAF50;
+    background-color: #4d56a4;
     color: white;
     padding: 10px 0;
     width: 100%;
@@ -195,7 +195,7 @@ main {
 }
 
 .compare-button {
-    background-color: #4CAF50;
+    background-color: #4d56a4;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -203,5 +203,5 @@ main {
 }
 
 .compare-button:hover {
-    background-color: #45a049;
+    background-color: #4d56a4;
 }
