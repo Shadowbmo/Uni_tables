@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abstrair Informações de Tabelas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Abstrair Informações de Tabelas</h1>
+    </header>
+    <main>
+        <form id="file-form">
+            <div class="file-input">
+                <label for="tables-file">Select de Tabelas:</label>
+                <input type="file" id="tables-file" accept=".csv">
+            </div>
+            <div class="file-input">
+                <label for="columns-file">Select de Colunas:</label>
+                <input type="file" id="columns-file" accept=".csv">
+            </div>
+            <div class="file-input">
+                <label for="primary-keys-file">Select de Chaves Primárias:</label>
+                <input type="file" id="primary-keys-file" accept=".csv">
+            </div>
+            <div class="file-input">
+                <label for="indexes-file">Select de Índices:</label>
+                <input type="file" id="indexes-file" accept=".csv">
+            </div>
+            <div class="file-input">
+                <label for="foreign-keys-file">Select de Chaves Estrangeiras:</label>
+                <input type="file" id="foreign-keys-file" accept=".csv">
+            </div>
+            <div class="file-input">
+                <label for="constraints-file">Select de Restrições:</label>
+                <input type="file" id="constraints-file" accept=".csv">
+            </div>
+            <div class="file-input">
+                <label for="triggers-file">Select de Triggers:</label>
+                <input type="file" id="triggers-file" accept=".csv">
+            </div>
+            <div class="file-input">
+                <label for="record-count-file">Select de Contagem de Registros:</label>
+                <input type="file" id="record-count-file" accept=".csv">
+            </div>
+            <button type="button" id="process-files">Abstrair Informações</button>
+        </form>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Tabelas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Visualizador de Tabelas</h1>
+    </header>
+    <main>
+        <aside id="table-list">
+            <h2>Listagem de Tabelas</h2>
+            <div id="upload-json">
+                <label for="json-file">Carregar arquivo JSON:</label>
+                <input type="file" id="json-file" accept=".json">
+            </div>
+            <div id="filters">
+                <h3>Filtros</h3>
+                <select id="filter-select">
+                    <option value="all">Todos</option>
+                    <option value="no-pk">Tabelas sem PK</option>
+                    <option value="no-synapse">Tabelas que não estão no Synapse</option>
+                </select>
+            </div>
+            <ul id="tables">
+                <!-- Lista de tabelas será inserida aqui pelo JS -->
+            </ul>
+            <button id="check-duplicates">Verificar Colunas Duplicadas</button>
+        </aside>
+        <section id="table-details">
+            <h2>Detalhes da Tabela</h2>
+            <div id="details">
+                <!-- Detalhes da tabela serão exibidos aqui -->
+            </div>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
