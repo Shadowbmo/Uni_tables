@@ -4,8 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkDuplicatesButton = document.getElementById('check-duplicates');
     const filterSelect = document.getElementById('filter-select');
     const jsonFileInput = document.getElementById('json-file');
+    const originJsonFileInput = document.getElementById('origin-json-file');
 
     let tables = [];
+    let originData = {};
 
     jsonFileInput.addEventListener('change', async (event) => {
         const file = event.target.files[0];
@@ -13,6 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const jsonData = await readJSONFile(file);
             tables = jsonData;
             renderTableList(tables);
+        }
+    });
+
+    originJsonFileInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            originData = await readJSONFile(file);
+            renderTableList(tables); // Re-render list to apply any new filters
         }
     });
 
@@ -46,15 +56,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     filterSelect.addEventListener('change', () => {
         const filterValue = filterSelect.value;
+        let filteredTables = tables;
+
         if (filterValue === 'no-pk') {
-            const tablesNoPk = tables.filter(table => table.primaryKey.length === 0);
-            renderTableList(tablesNoPk);
+            filteredTables = tables.filter(table => table.primaryKey.length === 0);
         } else if (filterValue === 'no-synapse') {
-            const tablesNoSynapse = tables.filter(table => !originData[table.name]);
-            renderTableList(tablesNoSynapse);
-        } else {
-            renderTableList(tables);
+            filteredTables = tables.filter(table => !originData[table.name.toUpperCase()]);
+        } else if (filterValue === 'in-synapse') {
+            filteredTables = tables.filter(table => originData[table.name.toUpperCase()]);
+        } else if (filterValue === 'no-synapse-no-pk') {
+            filteredTables = tables.filter(table => !originData[table.name.toUpperCase()] && table.primaryKey.length === 0);
+        } else if (filterValue === 'in-synapse-no-pk') {
+            filteredTables = tables.filter(table => originData[table.name.toUpperCase()] && table.primaryKey.length === 0);
         }
+
+        renderTableList(filteredTables);
     });
 
     checkDuplicatesButton.addEventListener('click', () => {
@@ -85,11 +101,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td>${col.constraints}</td>
                     </tr>`).join('')}
                 </table>
-                <p><strong>Chave Primária:</strong> ${table.primaryKey.join(', ')}</p>
-                <p><strong>Índices:</strong> ${table.indexes.join(', ')}</p>
-                <p><strong>Chaves Estrangeiras:</strong> ${table.foreignKeys.join(', ')}</p>
-                <p><strong>Restrições:</strong> ${table.constraints.join(', ')}</p>
-                <p><strong>Triggers:</strong> ${table.triggers.join(', ')}</p>
+                <p><strong>Chave Primária:</strong> ${table.primaryKey ? table.primaryKey.join(', ') : 'Nenhuma'}</p>
+                <p><strong>Índices:</strong> ${table.indexes ? table.indexes.join(', ') : 'Nenhum'}</p>
+                <p><strong>Chaves Estrangeiras:</strong> ${table.foreignKeys ? table.foreignKeys.join(', ') : 'Nenhuma'}</p>
+                <p><strong>Restrições:</strong> ${table.constraints ? table.constraints.join(', ') : 'Nenhuma'}</p>
+                <p><strong>Triggers:</strong> ${table.triggers ? table.triggers.join(', ') : 'Nenhuma'}</p>
                 <button class="compare-button" data-table-name="${table.name}">Comparar Ambiente</button>
             </div>
             <div class="table-info">
@@ -97,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong>Número de Registros:</strong> ${table.recordCount}</p>
                 <!-- Conteúdo dos registros pode ser adicionado aqui -->
             </div>
-          
         `;
 
         document.querySelector('.compare-button').addEventListener('click', () => {
@@ -110,10 +125,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const columnTables = {};
         tables.forEach(table => {
             table.columns.forEach(col => {
-                if (!columnTables[col.name]) {
-                    columnTables[col.name] = [];
+                if (!columnTables[col.name.toUpperCase()]) {
+                    columnTables[col.name.toUpperCase()] = [];
                 }
-                columnTables[col.name].push(table.name);
+                columnTables[col.name.toUpperCase()].push(table.name);
             });
         });
         const duplicates = {};
@@ -147,8 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function compareEnvironments(table) {
-        const originColumns = originData[table.name] || [];
-        const synapseColumns = table.columns;
+        const originColumns = originData[table.name.toUpperCase()]?.map(col => ({ ...col, name: col.name.toUpperCase() })) || [];
+        const synapseColumns = table.columns.map(col => ({ ...col, name: col.name.toUpperCase() }));
 
         const differences = {
             missingInSynapse: [],

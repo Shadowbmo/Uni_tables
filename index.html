@@ -16,6 +16,8 @@
             <div id="upload-json">
                 <label for="json-file">Carregar arquivo JSON:</label>
                 <input type="file" id="json-file" accept=".json">
+                <label for="origin-json-file">Carregar arquivo JSON de Origem:</label>
+                <input type="file" id="origin-json-file" accept=".json">
             </div>
             <div id="filters">
                 <h3>Filtros</h3>
@@ -23,6 +25,9 @@
                     <option value="all">Todos</option>
                     <option value="no-pk">Tabelas sem PK</option>
                     <option value="no-synapse">Tabelas que não estão no Synapse</option>
+                    <option value="in-synapse">Tabelas que estão no Synapse</option>
+                    <option value="no-synapse-no-pk">Tabelas que não estão no Synapse e que não tem PK</option>
+                    <option value="in-synapse-no-pk">Tabelas que estão no Synapse e que não tem PK</option>
                 </select>
             </div>
             <ul id="tables">

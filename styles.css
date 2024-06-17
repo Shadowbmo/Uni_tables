@@ -114,3 +114,94 @@ select {
     border: 1px solid #ddd;
     font-size: 1rem;
 }
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 0;
+    width: 100%;
+    text-align: center;
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px;
+}
+
+#table-list {
+    width: 25%;
+    margin-right: 20px;
+}
+
+#filters {
+    margin-bottom: 20px;
+}
+
+#filters select {
+    width: 100%;
+    padding: 5px;
+}
+
+#tables {
+    list-style-type: none;
+    padding: 0;
+}
+
+#tables li {
+    padding: 8px;
+    background: #f1f1f1;
+    margin-bottom: 5px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+}
+
+#tables li:hover {
+    background: #ddd;
+}
+
+#details {
+    width: 75%;
+}
+
+.table-info {
+    margin-bottom: 20px;
+}
+
+.table-info table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.table-info table, .table-info th, .table-info td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.table-info th {
+    background-color: #f2f2f2;
+}
+
+.compare-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.compare-button:hover {
+    background-color: #45a049;
+}
