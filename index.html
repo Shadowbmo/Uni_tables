@@ -14,8 +14,10 @@
         <aside id="table-list">
             <h2>Listagem de Tabelas</h2>
             <div id="upload-json">
-                <label for="json-file">Carregar arquivo JSON:</label>
+                <label for="json-file">Carregar arquivo JSON de Tabelas:</label>
                 <input type="file" id="json-file" accept=".json">
+            </div>
+            <div id="upload-origin-json">
                 <label for="origin-json-file">Carregar arquivo JSON de Origem:</label>
                 <input type="file" id="origin-json-file" accept=".json">
             </div>
@@ -26,8 +28,8 @@
                     <option value="no-pk">Tabelas sem PK</option>
                     <option value="no-synapse">Tabelas que não estão no Synapse</option>
                     <option value="in-synapse">Tabelas que estão no Synapse</option>
-                    <option value="no-synapse-no-pk">Tabelas que não estão no Synapse e que não tem PK</option>
-                    <option value="in-synapse-no-pk">Tabelas que estão no Synapse e que não tem PK</option>
+                    <option value="no-synapse-no-pk">Tabelas que não estão no Synapse e que não tem PK</option> <!-- Novo filtro -->
+                    <option value="in-synapse-no-pk">Tabelas que estão no Synapse e que não tem PK</option> <!-- Novo filtro -->
                 </select>
             </div>
             <ul id="tables">

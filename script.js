@@ -4,25 +4,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkDuplicatesButton = document.getElementById('check-duplicates');
     const filterSelect = document.getElementById('filter-select');
     const jsonFileInput = document.getElementById('json-file');
-    const originJsonFileInput = document.getElementById('origin-json-file');
+    const destinationJsonFileInput = document.getElementById('origin-json-file'); // Renomeado para "destinationJsonFileInput"
 
-    let tables = [];
-    let originData = {};
+    let originTables = []; // Renomeado para "originTables"
+    let destinationData = {}; // Renomeado para "destinationData"
 
     jsonFileInput.addEventListener('change', async (event) => {
         const file = event.target.files[0];
         if (file) {
             const jsonData = await readJSONFile(file);
-            tables = jsonData;
-            renderTableList(tables);
+            originTables = jsonData;
+            console.log("Origin tables from JSON:", originTables);
+            renderTableList(originTables);
         }
     });
 
-    originJsonFileInput.addEventListener('change', async (event) => {
+    destinationJsonFileInput.addEventListener('change', async (event) => {
         const file = event.target.files[0];
         if (file) {
-            originData = await readJSONFile(file);
-            renderTableList(tables); // Re-render list to apply any new filters
+            destinationData = await readJSONFile(file);
+            console.log("Destination data from JSON:", destinationData);
+            renderTableList(originTables); // Re-render list to apply any new filters
         }
     });
 
@@ -56,29 +58,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     filterSelect.addEventListener('change', () => {
         const filterValue = filterSelect.value;
-        let filteredTables = tables;
+        console.log("Selected filter:", filterValue);
+        let filteredTables = originTables;
 
         if (filterValue === 'no-pk') {
-            filteredTables = tables.filter(table => table.primaryKey.length === 0);
+            filteredTables = originTables.filter(table => table.primaryKey.length === 0);
         } else if (filterValue === 'no-synapse') {
-            filteredTables = tables.filter(table => !originData[table.name.toUpperCase()]);
+            filteredTables = originTables.filter(table => !destinationData[table.name.toUpperCase()]);
         } else if (filterValue === 'in-synapse') {
-            filteredTables = tables.filter(table => originData[table.name.toUpperCase()]);
+            filteredTables = originTables.filter(table => destinationData[table.name.toUpperCase()]);
         } else if (filterValue === 'no-synapse-no-pk') {
-            filteredTables = tables.filter(table => !originData[table.name.toUpperCase()] && table.primaryKey.length === 0);
+            filteredTables = originTables.filter(table => !destinationData[table.name.toUpperCase()] && table.primaryKey.length === 0);
         } else if (filterValue === 'in-synapse-no-pk') {
-            filteredTables = tables.filter(table => originData[table.name.toUpperCase()] && table.primaryKey.length === 0);
+            filteredTables = originTables.filter(table => destinationData[table.name.toUpperCase()] && table.primaryKey.length === 0);
         }
 
+        console.log("Filtered tables:", filteredTables);
         renderTableList(filteredTables);
     });
 
     checkDuplicatesButton.addEventListener('click', () => {
-        const duplicates = findDuplicateColumns(tables);
+        const duplicates = findDuplicateColumns(originTables);
+        console.log("Duplicate columns:", duplicates);
         showDuplicateColumns(duplicates);
     });
 
     function showTableDetails(table) {
+        console.log("Showing details for table:", table.name);
         detailsDiv.innerHTML = `
             <div class="table-info">
                 <h3>Informações Estruturais</h3>
@@ -117,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelector('.compare-button').addEventListener('click', () => {
             const differences = compareEnvironments(table);
+            console.log("Differences for table", table.name, differences);
             showEnvironmentDifferences(table.name, differences);
         });
     }
@@ -163,36 +170,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function compareEnvironments(table) {
-        const originTable = originData[table.name.toUpperCase()];
-        const originColumns = (originTable?.columns || []).map(col => ({ ...col, name: col.name.toUpperCase() }));
-        const synapseColumns = table.columns.map(col => ({ ...col, name: col.name.toUpperCase() }));
+        console.log("Comparing environments for table:", table.name);
+        const destinationTable = destinationData[table.name.toUpperCase()];
+        console.log("Destination table data:", destinationTable);
+
+        if (!destinationTable) {
+            console.log("Table not found in destination data:", table.name.toUpperCase());
+            return {
+                missingInDestination: [],
+                extraInDestination: table.columns.map(col => ({ ...col, name: col.name.toUpperCase() })),
+                mismatched: []
+            };
+        }
+
+        const originColumns = table.columns.map(col => ({ ...col, name: col.name.toUpperCase() }));
+        const destinationColumns = destinationTable.map(col => ({ ...col, name: col.name.toUpperCase() }));
+
+        console.log("Origin columns:", originColumns);
+        console.log("Destination columns:", destinationColumns);
 
         const differences = {
-            missingInSynapse: [],
-            extraInSynapse: [],
+            missingInDestination: [],
+            extraInDestination: [],
             mismatched: []
         };
 
         originColumns.forEach(originCol => {
-            const synapseCol = synapseColumns.find(synapseCol => synapseCol.name === originCol.name);
-            if (!synapseCol) {
-                differences.missingInSynapse.push(originCol);
+            const destinationCol = destinationColumns.find(destinationCol => destinationCol.name === originCol.name);
+            if (!destinationCol) {
+                differences.missingInDestination.push(originCol);
             } else if (
-                synapseCol.type !== originCol.type ||
-                synapseCol.size !== originCol.size ||
-                synapseCol.default !== originCol.default ||
-                synapseCol.constraints !== originCol.constraints
+                destinationCol.type !== originCol.type ||
+                destinationCol.size !== originCol.size ||
+                destinationCol.default !== originCol.default ||
+                destinationCol.constraints !== originCol.constraints
             ) {
                 differences.mismatched.push({
                     origin: originCol,
-                    synapse: synapseCol
+                    destination: destinationCol
                 });
             }
         });
 
-        synapseColumns.forEach(synapseCol => {
-            if (!originColumns.some(originCol => originCol.name === synapseCol.name)) {
-                differences.extraInSynapse.push(synapseCol);
+        destinationColumns.forEach(destinationCol => {
+            if (!originColumns.some(originCol => originCol.name === destinationCol.name)) {
+                differences.extraInDestination.push(destinationCol);
             }
         });
 
@@ -200,11 +222,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showEnvironmentDifferences(tableName, differences) {
+        console.log("Showing differences for table:", tableName);
         detailsDiv.innerHTML = `
             <div class="table-info">
-                <h3>Diferenças entre Origem e Synapse para ${tableName}</h3>
-                ${differences.missingInSynapse.length > 0 ? `
-                <p><strong>Faltando no Synapse:</strong></p>
+                <h3>Diferenças entre Origem e Destino para ${tableName}</h3>
+                ${differences.missingInDestination.length > 0 ? `
+                <p><strong>Faltando no Destino:</strong></p>
                 <table>
                     <tr>
                         <th>Nome da Coluna</th>
@@ -213,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <th>Valor Padrão</th>
                         <th>Restrições</th>
                     </tr>
-                    ${differences.missingInSynapse.map(col => `
+                    ${differences.missingInDestination.map(col => `
                     <tr>
                         <td>${col.name}</td>
                         <td>${col.type}</td>
@@ -222,9 +245,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td>${col.constraints}</td>
                     </tr>`).join('')}
                 </table>
-                ` : `<p>Nenhuma coluna faltando no Synapse.</p>`}
-                ${differences.extraInSynapse.length > 0 ? `
-                <p><strong>Extra no Synapse:</strong></p>
+                ` : `<p>Nenhuma coluna faltando no Destino.</p>`}
+                ${differences.extraInDestination.length > 0 ? `
+                <p><strong>Extra no Destino:</strong></p>
                 <table>
                     <tr>
                         <th>Nome da Coluna</th>
@@ -233,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <th>Valor Padrão</th>
                         <th>Restrições</th>
                     </tr>
-                    ${differences.extraInSynapse.map(col => `
+                    ${differences.extraInDestination.map(col => `
                     <tr>
                         <td>${col.name}</td>
                         <td>${col.type}</td>
@@ -242,20 +265,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td>${col.constraints}</td>
                     </tr>`).join('')}
                 </table>
-                ` : `<p>Nenhuma coluna extra no Synapse.</p>`}
+                ` : `<p>Nenhuma coluna extra no Destino.</p>`}
                 ${differences.mismatched.length > 0 ? `
                 <p><strong>Colunas com discrepâncias:</strong></p>
                 <table>
                     <tr>
                         <th>Nome da Coluna</th>
                         <th>Origem</th>
-                        <th>Synapse</th>
+                        <th>Destino</th>
                     </tr>
                     ${differences.mismatched.map(diff => `
                     <tr>
                         <td>${diff.origin.name}</td>
                         <td>${diff.origin.type}${diff.origin.size ? `(${diff.origin.size})` : ''}, default: ${diff.origin.default}, constraints: ${diff.origin.constraints}</td>
-                        <td>${diff.synapse.type}${diff.synapse.size ? `(${diff.synapse.size})` : ''}, default: ${diff.synapse.default}, constraints: ${diff.synapse.constraints}</td>
+                        <td>${diff.destination.type}${diff.destination.size ? `(${diff.destination.size})` : ''}, default: ${diff.destination.default}, constraints: ${diff.destination.constraints}</td>
                     </tr>`).join('')}
                 </table>
                 ` : `<p>Nenhuma discrepância encontrada.</p>`}
