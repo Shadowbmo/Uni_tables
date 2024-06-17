@@ -163,7 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function compareEnvironments(table) {
-        const originColumns = (originData[table.name.toUpperCase()]?.columns || []).map(col => ({ ...col, name: col.name.toUpperCase() }));
+        const originTable = originData[table.name.toUpperCase()];
+        const originColumns = (originTable?.columns || []).map(col => ({ ...col, name: col.name.toUpperCase() }));
         const synapseColumns = table.columns.map(col => ({ ...col, name: col.name.toUpperCase() }));
 
         const differences = {
