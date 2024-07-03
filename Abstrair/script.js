@@ -81,31 +81,48 @@ function processTables(data) {
             if (data.primaryKeys) {
                 tableInfo.primaryKey = data.primaryKeys
                     .filter(row => row[0] === tableName)
-                    .map(row => row[1]);
+                    .map(row => ({ column: row[1] }));
             }
 
             if (data.indexes) {
                 tableInfo.indexes = data.indexes
                     .filter(row => row[0] === tableName)
-                    .map(row => row[1]);
+                    .map(row => ({
+                        name: row[1],
+                        columns: row[2].split(',').map(col => col.trim())
+                    }));
             }
 
             if (data.foreignKeys) {
                 tableInfo.foreignKeys = data.foreignKeys
                     .filter(row => row[0] === tableName)
-                    .map(row => row[2]);
+                    .map(row => ({
+                        column: row[1],
+                        foreignTable: row[2],
+                        foreignColumn: row[3]
+                    }));
             }
 
             if (data.constraints) {
                 tableInfo.constraints = data.constraints
-                    .filter(row => row[0] === tableName)
-                    .map(row => row[1]);
+                    .filter(row => row[1] === tableName)
+                    .map(row => ({
+                        name: row[0],
+                        column: row[2],
+                        type: row[3]
+                    }));
             }
 
             if (data.triggers) {
                 tableInfo.triggers = data.triggers
-                    .filter(row => row[0] === tableName)
-                    .map(row => row[1]);
+                    .filter(row => row[2] === tableName)
+                    .map(row => ({
+                        schema: row[0],
+                        name: row[1],
+                        event: row[3],
+                        timing: row[4],
+                        statement: row[5]
+                    }));
             }
 
             tablesData.push(tableInfo);

@@ -107,11 +107,74 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td>${col.constraints}</td>
                     </tr>`).join('')}
                 </table>
-                <p><strong>Chave Primária:</strong> ${table.primaryKey ? table.primaryKey.join(', ') : 'Nenhuma'}</p>
-                <p><strong>Índices:</strong> ${table.indexes ? table.indexes.join(', ') : 'Nenhum'}</p>
-                <p><strong>Chaves Estrangeiras:</strong> ${table.foreignKeys ? table.foreignKeys.join(', ') : 'Nenhuma'}</p>
-                <p><strong>Restrições:</strong> ${table.constraints ? table.constraints.join(', ') : 'Nenhuma'}</p>
-                <p><strong>Triggers:</strong> ${table.triggers ? table.triggers.join(', ') : 'Nenhuma'}</p>
+                <p><strong>Chave Primária:</strong></p>
+                <table>
+                    <tr>
+                        <th>Coluna</th>
+                    </tr>
+                    ${table.primaryKey.map(pk => `
+                    <tr>
+                        <td>${pk.column}</td>
+                    </tr>`).join('')}
+                </table>
+                <p><strong>Índices:</strong></p>
+                <table>
+                    <tr>
+                        <th>Nome do Índice</th>
+                        <th>Colunas</th>
+                    </tr>
+                    ${table.indexes.map(index => `
+                    <tr>
+                        <td>${index.name}</td>
+                        <td>${index.columns.join(', ')}</td>
+                    </tr>`).join('')}
+                </table>
+                <p><strong>Chaves Estrangeiras:</strong></p>
+                <table>
+                    <tr>
+                        <th>Coluna</th>
+                        <th>Tabela Estrangeira</th>
+                        <th>Coluna Estrangeira</th>
+                    </tr>
+                    ${table.foreignKeys.map(fk => `
+                    <tr>
+                        <td>${fk.column}</td>
+                        <td>${fk.foreignTable}</td>
+                        <td>${fk.foreignColumn}</td>
+                    </tr>`).join('')}
+                </table>
+                <p><strong>Restrições:</strong></p>
+                <table>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Coluna</th>
+                        <th>Tipo</th>
+                    </tr>
+                    ${table.constraints.map(constraint => `
+                    <tr>
+                        <td>${constraint.name}</td>
+                        <td>${constraint.column}</td>
+                        <td>${constraint.type}</td>
+                    </tr>`).join('')}
+                </table>
+                <p><strong>Triggers:</strong></p>
+                <table>
+                    <tr>
+                        <th>Esquema</th>
+                        <th>Nome</th>
+                        <th>Evento</th>
+                        <th>Timing</th>
+                        <th>Statement</th>
+                    </tr>
+                    ${table.triggers.map(trigger => `
+                    <tr>
+                        <td>${trigger.schema}</td>
+                        <td>${trigger.name}</td>
+                        <td>${trigger.event}</td>
+                        <td>${trigger.timing}</td>
+                        <td>${trigger.statement}</td>
+                    </tr>`).join('')}
+                </table>
                 <button class="compare-button" data-table-name="${table.name}">Comparar Ambiente</button>
             </div>
             <div class="table-info">
